@@ -37,12 +37,24 @@ export async function createArticle(data: CreateArticleInput) {
       slug: `${Date.now()}`,
       published: true,
       authorId: user.id,
+      imageUrl: data.imageUrl ?? undefined,
     })
     .returning({ id: articles.id });
 
   const articleId = response[0]?.id;
-  // #region agent log
-  fetch('http://127.0.0.1:7370/ingest/4a5087fe-d0ec-4a60-bf59-db9c2440ff33',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c5525c'},body:JSON.stringify({sessionId:'c5525c',runId:'pre-fix',hypothesisId:'C',location:'articles.ts:createArticle:exit',message:'createArticle insert result',data:{articleId:articleId??null},timestamp:Date.now()})}).catch(()=>{});
+  fetch("http://127.0.0.1:7370/ingest/4a5087fe-d0ec-4a60-bf59-db9c2440ff33", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c5525c" },
+    body: JSON.stringify({
+      sessionId: "c5525c",
+      runId: "pre-fix",
+      hypothesisId: "C",
+      location: "articles.ts:createArticle:exit",
+      message: "createArticle insert result",
+      data: { articleId: articleId ?? null },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
   // #endregion
   return { success: true, message: "Article create logged", id: articleId };
 }
@@ -62,6 +74,7 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     .set({
       title: data.title,
       content: data.content,
+      imageUrl: data.imageUrl ?? undefined,
     })
     .where(eq(articles.id, +id));
   return { success: true, message: `Article ${id} update logged (stub)` };
