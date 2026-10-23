@@ -3,18 +3,28 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 
-  images: {
-    remotePatterns: [new URL(`${process.env.BLOB_BASE_URL}/**`)]
-  },
-  turbopack: {
-    root: dirname(__filename),
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
+	images: {
+		localPatterns: [
+			{
+				pathname: "/api/blob/**",
+			},
+		],
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "**",
+			},
+		],
+	},
+	turbopack: {
+		root: dirname(__filename),
+		rules: {
+			"*.css": {
+				loaders: ["@tailwindcss/turbopack"],
+				as: "*.css",
+			},
+		},
+	},
 };
 
 export default nextConfig;

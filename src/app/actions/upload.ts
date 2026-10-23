@@ -1,10 +1,7 @@
 "use server";
 
 import { hexclaveServerApp } from "@/hexclave/server";
-import { bold } from "@uiw/react-md-editor";
 import { put } from "@vercel/blob";
-// Server action to handle uploads (stub)
-// TODO: Replace placeholder logic with real Cloudinary (or other) upload
 
 export type UploadedFile = {
   url: string;
@@ -45,11 +42,18 @@ export async function uploadFile(formData: FormData): Promise<UploadedFile> {
 
   try {
     const blob = await put(file.name, file, {
-      access: "public",
+      access: "private",
       addRandomSuffix: true,
     });
+
+    // The blob URL points to the private store and can't be accessed
+    // directly by browsers. We proxy it through our path-based API route.
+    // Extract the pathname from the full blob URL.
+    const blobPathname = new URL(blob.url).pathname.replace(/^\//, "");
+    const proxyUrl = `/api/blob/${blobPathname}`;
+
     return {
-      url: blob.url ?? "",
+      url: proxyUrl,
       size: file.size,
       type: file.type,
       filename: blob.pathname ?? file.name,
